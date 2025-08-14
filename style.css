@@ -1,7 +1,11 @@
-/* Esorina ny @font-face satria ny index.html no manao azy ankehitriny */
-
+@font-face {
+    font-family: 'Ezra SIL';
+    src: url('SILEOT.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
 body {
-    font-family: 'Ezra SIL', Arial, sans-serif;
+    font-family: Arial, sans-serif;
     background-color: #f4f4f9;
     margin: 0;
     padding: 0;
@@ -44,6 +48,8 @@ input[type="text"] {
     cursor: pointer;
     border: none;
     text-align: center;
+    width: 100%;
+    box-sizing: border-box;
 }
 .phrase-item {
     background-color: white;
@@ -56,10 +62,11 @@ input[type="text"] {
 .phrase-item p {
     margin: 0.25rem 0;
 }
-.phrase-item.expanded .full-phrase-details {
+.phrase-item.expanded .phonetic-text,
+.phrase-item.expanded .malagasy-text {
     display: block;
 }
-.full-phrase-details {
+.phonetic-text, .malagasy-text, .full-phrase-details {
     display: none;
 }
 a.title {
@@ -69,18 +76,32 @@ a.title {
 a.title:hover {
     color: white;
 }
-.heb {
-    font-size: 2rem;
+.hidden {
+    display: none;
 }
-.phonetic-text {
-    font-size: 1.2rem;
-    color: #555;
+p.heb {
+    font-size: 28px;
+    color: #22577a;
+    direction: rtl;
+    font-family: 'Ezra SIL';
+    display: block !important;
 }
-.malagasy-text {
-    font-size: 1.2rem;
-    color: #555;
+p.topic {
+    font-size: 12px;
+    color: darkgrey;
+    padding: 5px;
+    border-radius: 5px;
+    margin: none;
+    display: block !important;
 }
-.topic {
-    font-size: 0.8rem;
-    color: #999;
+h2#topic-title {
+    text-align: center;
+}
+button#back-button {
+    background-color: transparent;
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 0;
 }
