@@ -62,22 +62,20 @@ input[type="text"] {
 .phrase-item p {
     margin: 0.25rem 0;
 }
+/* Miafina amin'ny default ireo singa ireo */
 .phrase-item .phonetic-text,
 .phrase-item .malagasy-text {
     display: none;
 }
-.phrase-item p.heb {
+/* Aseho foana ny teny hebreo sy ny lohahevitra */
+.phrase-item p.heb,
+.phrase-item p.topic {
     display: block;
 }
-.phrase-item .topic {
-    display: block;
-}
+/* Rehefa 'expanded' ilay phrase-item, aseho ireo singa miafina */
 .phrase-item.expanded .phonetic-text,
 .phrase-item.expanded .malagasy-text {
     display: block;
-}
-.phrase-item.expanded .topic {
-    display: none;
 }
 a.title {
     text-decoration: none;
@@ -92,7 +90,7 @@ a.title:hover {
 p.heb {
     font-size: 28px;
     color: #22577a;
-    direction: rtl;
+    direction:rtl;
     font-family: 'Ezra SIL';
 }
 p.topic {
@@ -102,7 +100,7 @@ p.topic {
     border-radius: 5px;
     margin: none;
 }
-h2#topic-title {
+h2#topic-title{
     text-align: center;
 }
 button#back-button {
