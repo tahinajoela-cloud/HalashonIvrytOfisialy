@@ -1,13 +1,17 @@
 let lastExpandedItem = null;
 
-// Ity code ity dia tsy maintsy miasa na misy aterineto na tsia
-document.addEventListener('DOMContentLoaded', function() {
-    if (document.getElementById('phrases-list')) {
-        const topicData = JSON.parse(localStorage.getItem('currentTopic'));
-        if (topicData) {
-            displayTopicPhrases(topicData);
-            
-            const topicSearchBar = document.getElementById('topic-search-bar');
+function initializeTopicPage() {
+    const topicData = JSON.parse(localStorage.getItem('currentTopic'));
+    if (topicData) {
+        const topicPageTitle = document.getElementById('topic-page-title');
+        if (topicPageTitle) topicPageTitle.textContent = 'Fianarana Hebreo - ' + topicData.topic;
+        const topicTitleLink = document.getElementById('topic-title-link');
+        if (topicTitleLink) topicTitleLink.querySelector('.title').textContent = '‹ ' + topicData.topic;
+
+        displayTopicPhrases(topicData);
+
+        const topicSearchBar = document.getElementById('topic-search-bar');
+        if (topicSearchBar) {
             topicSearchBar.addEventListener('input', (e) => {
                 const searchText = e.target.value.toLowerCase();
                 
@@ -25,8 +29,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 displayFilteredPhrases({ ...topicData, phrases: filteredPhrases });
             });
         }
+        
+        const topicTitleLinkElem = document.getElementById('topic-title-link');
+        if (topicTitleLinkElem) {
+            topicTitleLinkElem.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.showIndexPage(); 
+            });
+        }
     }
-});
+}
 
 function removeNikkud(text) {
     if (!text) return '';
@@ -35,14 +47,10 @@ function removeNikkud(text) {
 }
 
 function displayTopicPhrases(topic) {
-    const topicPageTitle = document.getElementById('topic-page-title');
-    topicPageTitle.textContent = 'Fianarana Hebreo - ' + topic.topic;
-    const topicTitleLink = document.getElementById('topic-title-link');
-    topicTitleLink.querySelector('.title').textContent = topic.topic;
-    
     const phrasesList = document.getElementById('phrases-list');
+    if (!phrasesList) return;
     phrasesList.innerHTML = '';
-
+    
     topic.phrases.forEach(phrase => {
         const phraseItem = document.createElement('div');
         phraseItem.className = 'phrase-item';
@@ -51,15 +59,15 @@ function displayTopicPhrases(topic) {
             <p class="heb">${phrase.hebreo}</p>
             <p class="phonetic-text">${phrase.phonetic}</p>
             <p class="malagasy-text">${phrase.malagasy}</p>
+            <p class="topic">Lohahevitra: ${phrase.topic}</p>
         `;
         
-        // Raha tiana, azo atao ny mampiseho bebe kokoa rehefa tsindriana
-        phraseItem.addEventListener('click', () => {
-            if (lastExpandedItem && lastExpandedItem !== phraseItem) {
+        phraseItem.addEventListener('click', function() {
+            if (lastExpandedItem && lastExpandedItem !== this) {
                 lastExpandedItem.classList.remove('expanded');
             }
-            phraseItem.classList.toggle('expanded');
-            lastExpandedItem = phraseItem;
+            this.classList.toggle('expanded');
+            lastExpandedItem = this;
         });
 
         phrasesList.appendChild(phraseItem);
@@ -68,8 +76,9 @@ function displayTopicPhrases(topic) {
 
 function displayFilteredPhrases(topic) {
     const phrasesList = document.getElementById('phrases-list');
+    if (!phrasesList) return;
     phrasesList.innerHTML = '';
-    
+
     if (topic.phrases.length === 0) {
         const noResultItem = document.createElement('div');
         noResultItem.className = 'phrase-item';
@@ -81,15 +90,23 @@ function displayFilteredPhrases(topic) {
     } else {
         topic.phrases.forEach(phrase => {
             const phraseItem = document.createElement('div');
-            phraseItem.className = 'phrase-item';
+            phraseItem.className = 'phrase-item expanded';
             
             phraseItem.innerHTML = `
                 <p class="heb">${phrase.hebreo}</p>
                 <p class="phonetic-text">${phrase.phonetic}</p>
                 <p class="malagasy-text">${phrase.malagasy}</p>
+                <p class="topic">Lohahevitra: ${phrase.topic}</p>
             `;
             
+            phraseItem.addEventListener('click', function() {
+                if (lastExpandedItem && lastExpandedItem !== this) {
+                    lastExpandedItem.classList.remove('expanded');
+                }
+                this.classList.toggle('expanded');
+                lastExpandedItem = this;
+            });
             phrasesList.appendChild(phraseItem);
         });
     }
-}        
+}
