@@ -1,37 +1,38 @@
 let allData = [];
 let topicsData = [];
+let lastExpandedItem = null;
 
-document.addEventListener('DOMContentLoaded', function() {
-    if (document.getElementById('topics-list')) {
-        const dataUrl = 'https://raw.githubusercontent.com/tahinajoela-cloud/HalashonIvrytOfisialy/main/data.csv';
+function initializeIndexPage() {
+    const cachedCsv = localStorage.getItem('cachedCsv');
+    if (!cachedCsv) {
+        console.error('Tsy misy angon-drakitra CSV voatahiry.');
+        return;
+    }
 
-        // Mampiasa PapaParse mba hisintonana sy hanodinana ny rakitra CSV avy amin'ny GitHub
-        Papa.parse(dataUrl, {
-            download: true,
-            header: true,
-            dynamicTyping: true,
-            complete: function(results) {
-                allData = results.data;
-                if (allData.length > 0) {
-                    const groupedData = allData.reduce((acc, current) => {
-                        if (!acc[current.topic]) {
-                            acc[current.topic] = [];
-                        }
-                        acc[current.topic].push(current);
-                        return acc;
-                    }, {});
-                    topicsData = Object.keys(groupedData).map(key => ({
-                        topic: key,
-                        phrases: groupedData[key]
-                    }));
-                    
-                    // Manampy ireo lisitra rehefa avy voahodina ny data
-                    displayTopics(topicsData);
-                }
+    Papa.parse(cachedCsv, {
+        header: true,
+        dynamicTyping: true,
+        complete: function(results) {
+            allData = results.data;
+            if (allData.length > 0) {
+                const groupedData = allData.reduce((acc, current) => {
+                    if (!acc[current.topic]) {
+                        acc[current.topic] = [];
+                    }
+                    acc[current.topic].push(current);
+                    return acc;
+                }, {});
+                topicsData = Object.keys(groupedData).map(key => ({
+                    topic: key,
+                    phrases: groupedData[key]
+                }));
+                displayTopics(topicsData);
             }
-        });
+        }
+    });
 
-        const globalSearchBar = document.getElementById('global-search-bar');
+    const globalSearchBar = document.getElementById('global-search-bar');
+    if (globalSearchBar) {
         globalSearchBar.addEventListener('input', (e) => {
             const searchText = e.target.value.toLowerCase();
             
@@ -45,10 +46,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 phrase.phonetic.toLowerCase().includes(searchText) ||
                 phrase.malagasy.toLowerCase().includes(searchText)
             );
+            
             displaySearchResults(filteredResults);
         });
     }
-});
+}
 
 function removeNikkud(text) {
     if (!text) return '';
@@ -58,15 +60,16 @@ function removeNikkud(text) {
 
 function displayTopics(topics) {
     const topicsList = document.getElementById('topics-list');
+    if (!topicsList) return;
     topicsList.innerHTML = '';
-
+    
     topics.forEach(topic => {
         const topicItem = document.createElement('button');
         topicItem.className = 'topic-item';
         topicItem.textContent = topic.topic;
         topicItem.addEventListener('click', () => {
             localStorage.setItem('currentTopic', JSON.stringify(topic));
-            window.location.href = 'topic.html';
+            window.showTopicPage();
         });
         topicsList.appendChild(topicItem);
     });
@@ -74,6 +77,7 @@ function displayTopics(topics) {
 
 function displaySearchResults(results) {
     const topicsList = document.getElementById('topics-list');
+    if (!topicsList) return;
     topicsList.innerHTML = '';
 
     if (results.length === 0) {
@@ -87,7 +91,7 @@ function displaySearchResults(results) {
     } else {
         results.forEach(phrase => {
             const phraseItem = document.createElement('div');
-            phraseItem.className = 'phrase-item';
+            phraseItem.className = 'phrase-item expanded';
             
             phraseItem.innerHTML = `
                 <p class="heb">${phrase.hebreo}</p>
@@ -95,9 +99,6 @@ function displaySearchResults(results) {
                 <p class="malagasy-text">${phrase.malagasy}</p>
                 <p class="topic">${phrase.topic}</p>
             `;
-            
-            phraseItem.querySelector('.phonetic-text').style.display = 'block';
-            phraseItem.querySelector('.malagasy-text').style.display = 'block';
             
             topicsList.appendChild(phraseItem);
         });
