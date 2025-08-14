@@ -62,23 +62,27 @@ input[type="text"] {
 .phrase-item p {
     margin: 0.25rem 0;
 }
+/* By default, hide phonetic and Malagasy texts */
 .phrase-item .phonetic-text,
-.phrase-item .malagasy-text,
-.phrase-item .topic {
+.phrase-item .malagasy-text {
     display: none;
 }
+/* By default, show the topic name */
+.phrase-item .topic {
+    display: block;
+}
+/* Always show the Hebrew text */
 .phrase-item p.heb {
     display: block;
 }
+/* When the item is expanded, show all details */
 .phrase-item.expanded .phonetic-text,
-.phrase-item.expanded .malagasy-text,
-.phrase-item.expanded .topic {
+.phrase-item.expanded .malagasy-text {
     display: block;
 }
-.phrase-item.search-result .phonetic-text,
-.phrase-item.search-result .malagasy-text,
-.phrase-item.search-result .topic {
-    display: block;
+/* When the item is expanded, hide the topic name */
+.phrase-item.expanded .topic {
+    display: none;
 }
 a.title {
     text-decoration: none;
@@ -113,4 +117,10 @@ button#back-button {
     border-radius: 5px;
     cursor: pointer;
     margin: 0;
+}
+.phonetic-text {
+    font-size: 16px;
+}
+.malagasy-text {
+    font-size: 18px;
 }
