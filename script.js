@@ -3,9 +3,9 @@ let topicsData = [];
 
 document.addEventListener('DOMContentLoaded', function() {
     if (document.getElementById('topics-list')) {
-        // Raha misy aterineto, dia mampiasa ny URL mivantana
         const dataUrl = 'https://raw.githubusercontent.com/tahinajoela-cloud/HalashonIvrytOfisialy/main/data.csv';
 
+        // Mampiasa PapaParse mba hisintonana sy hanodinana ny rakitra CSV avy amin'ny GitHub
         Papa.parse(dataUrl, {
             download: true,
             header: true,
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         phrases: groupedData[key]
                     }));
                     
-                    // Eo no miseho ny lisitra rehefa avy misintona ny data rehetra
+                    // Manampy ireo lisitra rehefa avy voahodina ny data
                     displayTopics(topicsData);
                 }
             }
