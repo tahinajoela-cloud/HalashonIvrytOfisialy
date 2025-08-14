@@ -62,12 +62,23 @@ input[type="text"] {
 .phrase-item p {
     margin: 0.25rem 0;
 }
-.phrase-item.expanded .phonetic-text,
-.phrase-item.expanded .malagasy-text {
+.phrase-item .phonetic-text,
+.phrase-item .malagasy-text,
+.phrase-item .topic {
+    display: none;
+}
+.phrase-item p.heb {
+    display: block !important;
+}
+.phrase-item.search-result .phonetic-text,
+.phrase-item.search-result .malagasy-text,
+.phrase-item.search-result .topic {
     display: block;
 }
-.phonetic-text, .malagasy-text, .full-phrase-details {
-    display: none;
+.phrase-item.expanded .phonetic-text,
+.phrase-item.expanded .malagasy-text,
+.phrase-item.expanded .topic {
+    display: block;
 }
 a.title {
     text-decoration: none;
@@ -84,7 +95,6 @@ p.heb {
     color: #22577a;
     direction: rtl;
     font-family: 'Ezra SIL';
-    display: block !important;
 }
 p.topic {
     font-size: 12px;
@@ -92,7 +102,6 @@ p.topic {
     padding: 5px;
     border-radius: 5px;
     margin: none;
-    display: block !important;
 }
 h2#topic-title {
     text-align: center;
