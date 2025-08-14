@@ -2,9 +2,11 @@ let allData = [];
 let topicsData = [];
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Eto no jerena raha ao amin'ny pejy 'index.html' isika
     if (document.getElementById('topics-list')) {
-        Papa.parse("data.csv", {
+        // Raha misy aterineto, dia mampiasa ny URL mivantana
+        const dataUrl = 'https://raw.githubusercontent.com/tahinajoela-cloud/HalashonIvrytOfisialy/main/data.csv';
+
+        Papa.parse(dataUrl, {
             download: true,
             header: true,
             dynamicTyping: true,
@@ -22,6 +24,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         topic: key,
                         phrases: groupedData[key]
                     }));
+                    
+                    // Eo no miseho ny lisitra rehefa avy misintona ny data rehetra
                     displayTopics(topicsData);
                 }
             }
@@ -43,7 +47,6 @@ document.addEventListener('DOMContentLoaded', function() {
             );
             displaySearchResults(filteredResults);
         });
-
     }
 });
 
@@ -56,8 +59,9 @@ function removeNikkud(text) {
 function displayTopics(topics) {
     const topicsList = document.getElementById('topics-list');
     topicsList.innerHTML = '';
+
     topics.forEach(topic => {
-        const topicItem = document.createElement('div');
+        const topicItem = document.createElement('button');
         topicItem.className = 'topic-item';
         topicItem.textContent = topic.topic;
         topicItem.addEventListener('click', () => {
