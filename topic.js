@@ -52,12 +52,18 @@ function displayTopicPhrases(topic) {
             <p class="topic">${phrase.topic}</p>
         `;
         
-        phraseItem.addEventListener('click', function() {
-            if (lastExpandedItem && lastExpandedItem !== this) {
+        phraseItem.addEventListener('click', () => {
+            if (lastExpandedItem && lastExpandedItem !== phraseItem) {
                 lastExpandedItem.classList.remove('expanded');
             }
-            this.classList.toggle('expanded');
-            lastExpandedItem = this;
+            
+            phraseItem.classList.toggle('expanded');
+            
+            if (phraseItem.classList.contains('expanded')) {
+                lastExpandedItem = phraseItem;
+            } else {
+                lastExpandedItem = null;
+            }
         });
         
         phrasesList.appendChild(phraseItem);
@@ -83,7 +89,7 @@ function displayFilteredPhrases(topic) {
     } else {
         topic.phrases.forEach(phrase => {
             const phraseItem = document.createElement('div');
-            phraseItem.className = 'phrase-item expanded';
+            phraseItem.className = 'phrase-item expanded'; /* expanded avy hatrany */
             
             phraseItem.innerHTML = `
                 <p class="heb">${phrase.hebreo}</p>
@@ -92,13 +98,20 @@ function displayFilteredPhrases(topic) {
                 <p class="topic">Lohahevitra: ${phrase.topic}</p>
             `;
             
-            phraseItem.addEventListener('click', function() {
-                if (lastExpandedItem && lastExpandedItem !== this) {
+            phraseItem.addEventListener('click', () => {
+                if (lastExpandedItem && lastExpandedItem !== phraseItem) {
                     lastExpandedItem.classList.remove('expanded');
                 }
-                this.classList.toggle('expanded');
-                lastExpandedItem = this;
+                
+                phraseItem.classList.toggle('expanded');
+                
+                if (phraseItem.classList.contains('expanded')) {
+                    lastExpandedItem = phraseItem;
+                } else {
+                    lastExpandedItem = null;
+                }
             });
+            
             phrasesList.appendChild(phraseItem);
         });
     }
