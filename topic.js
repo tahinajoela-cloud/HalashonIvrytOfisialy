@@ -1,17 +1,12 @@
 let lastExpandedItem = null;
 
-function initializeTopicPage() {
-    const topicData = JSON.parse(localStorage.getItem('currentTopic'));
-    if (topicData) {
-        const topicPageTitle = document.getElementById('topic-page-title');
-        if (topicPageTitle) topicPageTitle.textContent = 'Fianarana Hebreo - ' + topicData.topic;
-        const topicTitleLink = document.getElementById('topic-title-link');
-        if (topicTitleLink) topicTitleLink.querySelector('.title').textContent = '‹ ' + topicData.topic;
-
-        displayTopicPhrases(topicData);
-
-        const topicSearchBar = document.getElementById('topic-search-bar');
-        if (topicSearchBar) {
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('phrases-list')) {
+        const topicData = JSON.parse(localStorage.getItem('currentTopic'));
+        if (topicData) {
+            displayTopicPhrases(topicData);
+            
+            const topicSearchBar = document.getElementById('topic-search-bar');
             topicSearchBar.addEventListener('input', (e) => {
                 const searchText = e.target.value.toLowerCase();
                 
@@ -29,16 +24,8 @@ function initializeTopicPage() {
                 displayFilteredPhrases({ ...topicData, phrases: filteredPhrases });
             });
         }
-        
-        const topicTitleLinkElem = document.getElementById('topic-title-link');
-        if (topicTitleLinkElem) {
-            topicTitleLinkElem.addEventListener('click', (e) => {
-                e.preventDefault();
-                window.showIndexPage(); 
-            });
-        }
     }
-}
+});
 
 function removeNikkud(text) {
     if (!text) return '';
@@ -47,10 +34,13 @@ function removeNikkud(text) {
 }
 
 function displayTopicPhrases(topic) {
-    const phrasesList = document.getElementById('phrases-list');
-    if (!phrasesList) return;
-    phrasesList.innerHTML = '';
+    document.getElementById('topic-page-title').textContent = topic.topic + ' - Fianarana Hebreo';
+    const topicTitleLink = document.getElementById('topic-title-link');
+    topicTitleLink.querySelector('.title').textContent = topic.topic;
     
+    const phrasesList = document.getElementById('phrases-list');
+    phrasesList.innerHTML = '';
+
     topic.phrases.forEach(phrase => {
         const phraseItem = document.createElement('div');
         phraseItem.className = 'phrase-item';
@@ -59,7 +49,7 @@ function displayTopicPhrases(topic) {
             <p class="heb">${phrase.hebreo}</p>
             <p class="phonetic-text">${phrase.phonetic}</p>
             <p class="malagasy-text">${phrase.malagasy}</p>
-            <p class="topic">Lohahevitra: ${phrase.topic}</p>
+            <p class="topic">${phrase.topic}</p>
         `;
         
         phraseItem.addEventListener('click', function() {
@@ -69,14 +59,17 @@ function displayTopicPhrases(topic) {
             this.classList.toggle('expanded');
             lastExpandedItem = this;
         });
-
+        
         phrasesList.appendChild(phraseItem);
     });
 }
 
 function displayFilteredPhrases(topic) {
+    document.getElementById('topic-page-title').textContent = topic.topic + ' - Fianarana Hebreo';
+    const topicTitleLink = document.getElementById('topic-title-link');
+    topicTitleLink.querySelector('.title').textContent = topic.topic;
+    
     const phrasesList = document.getElementById('phrases-list');
-    if (!phrasesList) return;
     phrasesList.innerHTML = '';
 
     if (topic.phrases.length === 0) {
