@@ -68,16 +68,16 @@ input[type="text"] {
     display: none;
 }
 .phrase-item p.heb {
-    display: block !important;
-}
-.phrase-item.search-result .phonetic-text,
-.phrase-item.search-result .malagasy-text,
-.phrase-item.search-result .topic {
     display: block;
 }
 .phrase-item.expanded .phonetic-text,
 .phrase-item.expanded .malagasy-text,
 .phrase-item.expanded .topic {
+    display: block;
+}
+.phrase-item.search-result .phonetic-text,
+.phrase-item.search-result .malagasy-text,
+.phrase-item.search-result .topic {
     display: block;
 }
 a.title {
