@@ -1,38 +1,32 @@
 let allData = [];
 let topicsData = [];
-let lastExpandedItem = null;
 
-function initializeIndexPage() {
-    const cachedCsv = localStorage.getItem('cachedCsv');
-    if (!cachedCsv) {
-        console.error('Tsy misy angon-drakitra CSV voatahiry.');
-        return;
-    }
-
-    Papa.parse(cachedCsv, {
-        header: true,
-        dynamicTyping: true,
-        complete: function(results) {
-            allData = results.data;
-            if (allData.length > 0) {
-                const groupedData = allData.reduce((acc, current) => {
-                    if (!acc[current.topic]) {
-                        acc[current.topic] = [];
-                    }
-                    acc[current.topic].push(current);
-                    return acc;
-                }, {});
-                topicsData = Object.keys(groupedData).map(key => ({
-                    topic: key,
-                    phrases: groupedData[key]
-                }));
-                displayTopics(topicsData);
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('topics-list')) {
+        Papa.parse("data.csv", {
+            download: true,
+            header: true,
+            dynamicTyping: true,
+            complete: function(results) {
+                allData = results.data;
+                if (allData.length > 0) {
+                    const groupedData = allData.reduce((acc, current) => {
+                        if (!acc[current.topic]) {
+                            acc[current.topic] = [];
+                        }
+                        acc[current.topic].push(current);
+                        return acc;
+                    }, {});
+                    topicsData = Object.keys(groupedData).map(key => ({
+                        topic: key,
+                        phrases: groupedData[key]
+                    }));
+                    displayTopics(topicsData);
+                }
             }
-        }
-    });
+        });
 
-    const globalSearchBar = document.getElementById('global-search-bar');
-    if (globalSearchBar) {
+        const globalSearchBar = document.getElementById('global-search-bar');
         globalSearchBar.addEventListener('input', (e) => {
             const searchText = e.target.value.toLowerCase();
             
@@ -46,11 +40,10 @@ function initializeIndexPage() {
                 phrase.phonetic.toLowerCase().includes(searchText) ||
                 phrase.malagasy.toLowerCase().includes(searchText)
             );
-            
             displaySearchResults(filteredResults);
         });
     }
-}
+});
 
 function removeNikkud(text) {
     if (!text) return '';
@@ -60,16 +53,14 @@ function removeNikkud(text) {
 
 function displayTopics(topics) {
     const topicsList = document.getElementById('topics-list');
-    if (!topicsList) return;
     topicsList.innerHTML = '';
-    
     topics.forEach(topic => {
-        const topicItem = document.createElement('button');
+        const topicItem = document.createElement('div');
         topicItem.className = 'topic-item';
         topicItem.textContent = topic.topic;
         topicItem.addEventListener('click', () => {
             localStorage.setItem('currentTopic', JSON.stringify(topic));
-            window.showTopicPage();
+            window.location.href = 'topic.html';
         });
         topicsList.appendChild(topicItem);
     });
@@ -77,7 +68,6 @@ function displayTopics(topics) {
 
 function displaySearchResults(results) {
     const topicsList = document.getElementById('topics-list');
-    if (!topicsList) return;
     topicsList.innerHTML = '';
 
     if (results.length === 0) {
@@ -91,7 +81,7 @@ function displaySearchResults(results) {
     } else {
         results.forEach(phrase => {
             const phraseItem = document.createElement('div');
-            phraseItem.className = 'phrase-item expanded';
+            phraseItem.className = 'phrase-item search-result';
             
             phraseItem.innerHTML = `
                 <p class="heb">${phrase.hebreo}</p>
@@ -103,4 +93,4 @@ function displaySearchResults(results) {
             topicsList.appendChild(phraseItem);
         });
     }
-}
+}       
