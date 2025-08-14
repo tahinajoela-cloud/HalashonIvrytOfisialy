@@ -81,7 +81,8 @@ function displaySearchResults(results) {
     } else {
         results.forEach(phrase => {
             const phraseItem = document.createElement('div');
-            phraseItem.className = 'phrase-item search-result';
+            // Mampiasa 'expanded' ho an'ny valin'ny fikarohana mba hanehoana avy hatrany ny antsipiriany
+            phraseItem.className = 'phrase-item expanded';
             
             phraseItem.innerHTML = `
                 <p class="heb">${phrase.hebreo}</p>
