@@ -93,4 +93,4 @@ function displaySearchResults(results) {
             topicsList.appendChild(phraseItem);
         });
     }
-}       
+}
