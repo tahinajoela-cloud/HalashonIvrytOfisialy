@@ -1,14 +1,10 @@
-@font-face {
-    font-family: 'Ezra SIL'; /* Manome anarana an'ilay font ianao */
-    src: url('SILEOT.ttf') format('truetype'); /* Ampidirina ny toerana sy ny karazana rakitra */
-    font-weight: normal;
-    font-style: normal;
-}
+/* Esorina ny @font-face satria ny index.html no manao azy ankehitriny */
+
 body {
-font-family: Arial, sans-serif;
-background-color: #f4f4f9;
-margin: 0;
-padding: 0;
+    font-family: 'Ezra SIL', Arial, sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
 }
 header {
     text-align: center;
@@ -23,7 +19,7 @@ header {
 .sticky-header {
     position: sticky;
     top: 0;
-    background-color: ;
+    background-color: #22577a;
     z-index: 100;
     padding: 10px 20px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -32,33 +28,33 @@ header {
     text-align: center;
 }
 .main-container {
-padding: 1rem;
+    padding: 1rem;
 }
 input[type="text"] {
-width: 100%;
-padding: 0.5rem;
-margin-bottom: 1rem;
-box-sizing: border-box;
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    box-sizing: border-box;
 }
 .topic-item {
-background-color: #fff;
-padding: 1rem;
-margin-bottom: 0.5rem;
-border-radius: 5px;
-cursor: pointer;
-border: none;
-text-align: center;
+    background-color: #fff;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+    text-align: center;
 }
 .phrase-item {
-background-color: white;
-padding: 1rem;
-margin-bottom: 0.5rem;
-border-radius: 5px;
-cursor: pointer;
-text-align: center;
+    background-color: white;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
 }
 .phrase-item p {
-margin: 0.25rem 0;
+    margin: 0.25rem 0;
 }
 .phrase-item.expanded .full-phrase-details {
     display: block;
@@ -67,47 +63,24 @@ margin: 0.25rem 0;
     display: none;
 }
 a.title {
-text-decoration: none;
-color: white;
+    text-decoration: none;
+    color: white;
 }
 a.title:hover {
     color: white;
 }
-.hidden {
-display: none;
-}
-p.heb {
-    font-size: 28px;
-    color: #22577a;
-    direction:rtl;
-    font-family: 'Ezra SIL';
-}
-p.topic {
-    font-size: 12px;
-    color: darkgrey;
-    padding: 5px;
-    border-radius: 5px;
-    margin: none;
-}
-h2#topic-title{
-    text-align: center;
-}
-button#back-button {
-    background-color: transparent;
-    border: 1px solid #ccc;
-    padding: 8px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin: 0;
-}
-
-/* Fanampiana vaovao */
-.phonetic-text, .malagasy-text {
-    display: none;
+.heb {
+    font-size: 2rem;
 }
 .phonetic-text {
-    font-size: 16px;
+    font-size: 1.2rem;
+    color: #555;
 }
 .malagasy-text {
-    font-size: 18px;
+    font-size: 1.2rem;
+    color: #555;
+}
+.topic {
+    font-size: 0.8rem;
+    color: #999;
 }
