@@ -115,4 +115,4 @@ function displayFilteredPhrases(topic) {
             phrasesList.appendChild(phraseItem);
         });
     }
-}            
+}
