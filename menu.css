@@ -1,60 +1,71 @@
-#side-menu {
-    position: fixed;
-    top: 0;
-    right: -300px;
-    width: 300px;
-    height: 100%;
-    background-color: #402149;
-    color: white;
-    transition: right 0.3s ease;
-    box-shadow: -2px 0 5px rgba(0,0,0,0.5);
-    z-index: 1000;
-    padding: 20px;
-    box-sizing: border-box;
+function addSwipeListeners() {
+    const sideMenu = document.getElementById('side-menu');
+    let startX;
+    
+    document.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+    });
+
+    document.addEventListener('touchend', (e) => {
+        const endX = e.changedTouches[0].clientX;
+        const deltaX = endX - startX;
+
+        if (Math.abs(deltaX) > 50) {
+            if (deltaX < 0) {
+                sideMenu.classList.add('open');
+            } else {
+                sideMenu.classList.remove('open');
+            }
+        }
+    });
 }
 
-#side-menu.open {
-    right: 0;
-}
+function createAndDisplayMenu(menuData) {
+    const sideMenu = document.getElementById('side-menu');
+    const menuList = sideMenu.querySelector('ul');
+    
+    menuList.innerHTML = '';
 
-.menu-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #555;
-    padding-bottom: 15px;
-}
+    menuData.forEach(item => {
+        if (!item || !item.text) {
+            return;
+        }
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.textContent = item.text;
+        
+        if (item.text.toLowerCase().includes('hivoaka')) {
+            a.href = '#';
+            a.onclick = function() {
+                showExitDialog();
+                return false;
+            };
+        } else {
+            a.href = '#';
+            a.onclick = function() {
+                if (item.text.toLowerCase().includes('mombamomba')) {
+                    showInfoPage('about');
+                } else if (item.text.toLowerCase().includes('fifandraisana')) {
+                    showInfoPage('contact');
+                } else if (item.text.toLowerCase().includes('fanohanana')) {
+                    showInfoPage('support');
+                } else if (item.text.toLowerCase().includes('kaseho')) {
+                    showInfoPage('version');
+                }
+                sideMenu.classList.remove('open');
+                return false;
+            };
+        }
 
-.menu-icon {
-    width: 40px;
-    height: 40px;
-    margin-right: 15px;
-}
-
-.menu-header h2 {
-    margin: 0;
-    font-size: 1.2em;
-}
-
-#side-menu ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-#side-menu li {
-    margin-bottom: 10px;
-}
-
-#side-menu a {
-    color: white;
-    text-decoration: none;
-    font-size: 1.1em;
-    display: block;
-    padding: 10px;
-    border-radius: 5px;
-}
-
-#side-menu a:hover {
-    background-color: #936B9F;
+        li.appendChild(a);
+        menuList.appendChild(li);
+    });
+    
+    const menuHeader = sideMenu.querySelector('.menu-header');
+    menuHeader.innerHTML = `
+        <img src="icon.png" alt="Icon" class="menu-icon">
+        <h2>Halashon Ivryt Ofisialy</h2>
+    `;
+    
+    addSwipeListeners();
 }
