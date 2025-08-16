@@ -2,7 +2,8 @@
   "files": [
     "home.html",
     "topic.html",
-    "papaparse.js",
+    "papaparse.min.js",
+    "script.js",
     "topic.js",
     "style.css",
     "data.csv",
