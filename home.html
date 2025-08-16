@@ -1,0 +1,344 @@
+<!<!DOCTYPE html>
+<html lang="mg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Halashon Ivryt Ofisialy</title>
+    <style id="main-style"></style>
+    <style id="font-style"></style>
+</head>
+<body>
+
+    <div id="app-container">
+        </div>
+    
+    <script>
+        const githubUrls = {
+            mainCss: 'https://raw.githubusercontent.com/tahinajoela-cloud/HalashonIvrytOfisialy/main/style.css',
+            papaparseJs: 'https://raw.githubusercontent.com/tahinajoela-cloud/HalashonIvrytOfisialy/main/papaparse.min.js',
+            dataCsv: 'https://raw.githubusercontent.com/tahinajoela-cloud/HalashonIvrytOfisialy/main/data.csv',
+            fontTtf: 'https://raw.githubusercontent.com/tahinajoela-cloud/HalashonIvrytOfisialy/main/SILEOT.ttf'
+        };
+
+        const appContainer = document.getElementById('app-container');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (navigator.onLine) {
+                appContainer.innerHTML = `
+                    <div style="text-align: center; padding: 20px;">
+                        <h1>Misy aterineto.</h1>
+                        <p>Tsindrio ny "Manomboka" mba hisintona sy hitahiry ireo rakitra ilaina...</p>
+                        <button onclick="downloadAndCacheFiles()">Manomboka</button>
+                    </div>
+                `;
+            } else {
+                renderApp();
+            }
+        });
+
+        async function downloadAndCacheFiles() {
+            try {
+                // Sintomina sy tahirizina ny rakitra CSS, Papaparse, ary ny CSV
+                const mainCssResponse = await fetch(githubUrls.mainCss);
+                const mainCssText = await mainCssResponse.text();
+                localStorage.setItem('mainCss', mainCssText);
+                document.getElementById('main-style').textContent = mainCssText;
+
+                const papaParseResponse = await fetch(githubUrls.papaparseJs);
+                const papaParseText = await papaParseResponse.text();
+                localStorage.setItem('papaparseJs', papaParseText);
+                
+                const dataCsvResponse = await fetch(githubUrls.dataCsv);
+                const dataCsvText = await dataCsvResponse.text();
+                localStorage.setItem('dataCsv', dataCsvText);
+
+                // --- FANITSIAVA VAOVAO HO AN'NY FONT ---
+                const fontResponse = await fetch(githubUrls.fontTtf);
+                const fontBlob = await fontResponse.blob();
+                
+                // Ovaina ho Base64 ny font vao tahirizina ao amin'ny localStorage
+                const reader = new FileReader();
+                reader.onloadend = function() {
+                    const fontBase64 = reader.result;
+                    localStorage.setItem('fontBase64', fontBase64);
+                    // Mampiseho ny alert ary manokatra ny pejy aorian'ny fahavitan'ny famadihana sy fitahirizana
+                    alert("Voasintona sy voatahiry soa aman-tsara avokoa ireo rakitra ilaina");
+                    renderApp();
+                };
+                reader.readAsDataURL(fontBlob);
+                // --- FARAN'NY FANITSIANA VAOVAO ---
+
+            } catch (error) {
+                console.error("Fahadisoana nandritra ny fisintonana ny rakitra:", error);
+                alert("Tsy afaka nisintona ireo rakitra ilaina. Hamarino ny fifandraisana amin'ny aterineto.");
+            }
+        }
+
+        function renderApp() {
+            // Ampidirina ny style avy amin'ny localStorage
+            const mainCssText = localStorage.getItem('mainCss');
+            const fontBase64 = localStorage.getItem('fontBase64');
+
+            if (mainCssText) document.getElementById('main-style').textContent = mainCssText;
+            
+            if (fontBase64) {
+                 // Ampiasaina ny Base64 hamoronana ny style ho an'ny font
+                const fontCss = `@font-face { font-family: 'Ezra SIL'; src: url('${fontBase64}') format('truetype'); }`;
+                document.getElementById('font-style').textContent = fontCss;
+            }
+
+            const papaparseJs = localStorage.getItem('papaparseJs');
+            if (papaparseJs) {
+                const scriptElem = document.createElement('script');
+                scriptElem.textContent = papaparseJs;
+                document.head.appendChild(scriptElem);
+            }
+
+            const pageType = localStorage.getItem('currentPage') || 'index';
+            if (pageType === 'index') {
+                showIndexPage();
+            } else if (pageType === 'topic') {
+                showTopicPage();
+            }
+        }
+        
+        // ... (Ny sisa amin'ny code JavaScript dia tsy miova, ary ao anaty io script io avokoa) ...
+        
+        let allData = [];
+        let topicsData = [];
+        let lastExpandedItem = null;
+
+        function removeNikkud(text) {
+            if (!text) return '';
+            const nikkud = /[\u0591-\u05BD\u05BF-\u05C5\u05C7]/g;
+            return text.replace(nikkud, '');
+        }
+
+        function showIndexPage() {
+            localStorage.setItem('currentPage', 'index');
+            appContainer.innerHTML = `
+                <header class="sticky-header">
+                    <h1><a class="title" href="#" onclick="showIndexPage();">Halashon Ivryt Ofisialy</a></h1>
+                    <input type="text" id="global-search-bar" placeholder="Mikaroka teny anaty rindrambaiko...">
+                </header>
+                <div class="main-container">
+                    <div id="topics-list"></div>
+                </div>
+            `;
+            initializeIndexPage();
+        }
+
+        function showTopicPage() {
+            localStorage.setItem('currentPage', 'topic');
+            appContainer.innerHTML = `
+                <header class="sticky-header">
+                    <h1 id="topic-title-link"><a class="title" href="#" onclick="showIndexPage();"></a></h1>
+                    <input type="text" id="topic-search-bar" placeholder="Mikaroka teny anatin'ity lohahevitra ity...">
+                </header>
+                <div class="main-container">
+                    <div id="phrases-list"></div>
+                </div>
+            `;
+            initializeTopicPage();
+        }
+        
+        function initializeIndexPage() {
+            const cachedCsv = localStorage.getItem('dataCsv');
+            if (!cachedCsv) {
+                console.error('Tsy misy angon-drakitra CSV voatahiry.');
+                return;
+            }
+
+            Papa.parse(cachedCsv, {
+                header: true,
+                dynamicTyping: true,
+                complete: function(results) {
+                    allData = results.data;
+                    if (allData.length > 0) {
+                        const groupedData = allData.reduce((acc, current) => {
+                            if (!acc[current.topic]) {
+                                acc[current.topic] = [];
+                            }
+                            acc[current.topic].push(current);
+                            return acc;
+                        }, {});
+                        topicsData = Object.keys(groupedData).map(key => ({
+                            topic: key,
+                            phrases: groupedData[key]
+                        }));
+                        displayTopics(topicsData);
+                    }
+                }
+            });
+
+            const globalSearchBar = document.getElementById('global-search-bar');
+            if (globalSearchBar) {
+                globalSearchBar.addEventListener('input', (e) => {
+                    const searchText = e.target.value.toLowerCase();
+                    
+                    if (searchText.trim() === '') {
+                        displayTopics(topicsData);
+                        return;
+                    }
+
+                    const filteredResults = allData.filter(phrase =>
+                        removeNikkud(phrase.hebreo).includes(removeNikkud(searchText)) ||
+                        phrase.phonetic.toLowerCase().includes(searchText) ||
+                        phrase.malagasy.toLowerCase().includes(searchText)
+                    );
+                    displaySearchResults(filteredResults);
+                });
+            }
+        }
+
+        function displayTopics(topics) {
+            const topicsList = document.getElementById('topics-list');
+            if (!topicsList) return;
+            topicsList.innerHTML = '';
+            topics.forEach(topic => {
+                const topicItem = document.createElement('div');
+                topicItem.className = 'topic-item';
+                topicItem.textContent = topic.topic;
+                topicItem.addEventListener('click', () => {
+                    localStorage.setItem('currentTopic', JSON.stringify(topic));
+                    showTopicPage();
+                });
+                topicsList.appendChild(topicItem);
+            });
+        }
+
+        function displaySearchResults(results) {
+            const topicsList = document.getElementById('topics-list');
+            if (!topicsList) return;
+            topicsList.innerHTML = '';
+
+            if (results.length === 0) {
+                const noResultItem = document.createElement('div');
+                noResultItem.className = 'phrase-item';
+                noResultItem.style.textAlign = 'center';
+                noResultItem.style.color = '#888';
+                noResultItem.style.padding = '2rem';
+                noResultItem.textContent = 'Tsy ato anaty rindrambaiko ny teny nokarohinao';
+                topicsList.appendChild(noResultItem);
+            } else {
+                results.forEach(phrase => {
+                    const phraseItem = document.createElement('div');
+                    phraseItem.className = 'phrase-item expanded'; 
+                    
+                    phraseItem.innerHTML = `
+                        <p class="heb">${phrase.hebreo}</p>
+                        <p class="phonetic-text">${phrase.phonetic}</p>
+                        <p class="malagasy-text">${phrase.malagasy}</p>
+                        <p class="topic">${phrase.topic}</p>
+                    `;
+                    
+                    topicsList.appendChild(phraseItem);
+                });
+            }
+        }
+
+        function initializeTopicPage() {
+            const topicData = JSON.parse(localStorage.getItem('currentTopic'));
+            if (topicData) {
+                const topicTitleLink = document.getElementById('topic-title-link');
+                if (topicTitleLink) topicTitleLink.querySelector('.title').textContent = topicData.topic;
+                
+                displayTopicPhrases(topicData);
+
+                const topicSearchBar = document.getElementById('topic-search-bar');
+                if (topicSearchBar) {
+                    topicSearchBar.addEventListener('input', (e) => {
+                        const searchText = e.target.value.toLowerCase();
+                        
+                        if (searchText.trim() === '') {
+                            displayTopicPhrases(topicData);
+                            return;
+                        }
+
+                        const filteredPhrases = topicData.phrases.filter(phrase =>
+                            removeNikkud(phrase.hebreo).includes(removeNikkud(searchText)) ||
+                            phrase.phonetic.toLowerCase().includes(searchText) ||
+                            phrase.malagasy.toLowerCase().includes(searchText)
+                        );
+                        
+                        displayFilteredPhrases({ ...topicData, phrases: filteredPhrases });
+                    });
+                }
+            }
+        }
+        
+        function displayTopicPhrases(topic) {
+            const phrasesList = document.getElementById('phrases-list');
+            if (!phrasesList) return;
+            phrasesList.innerHTML = '';
+
+            topic.phrases.forEach(phrase => {
+                const phraseItem = document.createElement('div');
+                phraseItem.className = 'phrase-item';
+                
+                phraseItem.innerHTML = `
+                    <p class="heb">${phrase.hebreo}</p>
+                    <p class="phonetic-text">${phrase.phonetic}</p>
+                    <p class="malagasy-text">${phrase.malagasy}</p>
+                    <p class="topic">${phrase.topic}</p>
+                `;
+                
+                phraseItem.addEventListener('click', function() {
+                    if (lastExpandedItem && lastExpandedItem !== this) {
+                        lastExpandedItem.classList.remove('expanded');
+                    }
+                    this.classList.toggle('expanded');
+                    if (this.classList.contains('expanded')) {
+                        lastExpandedItem = this;
+                    } else {
+                        lastExpandedItem = null;
+                    }
+                });
+                
+                phrasesList.appendChild(phraseItem);
+            });
+        }
+        
+        function displayFilteredPhrases(topic) {
+            const phrasesList = document.getElementById('phrases-list');
+            if (!phrasesList) return;
+            phrasesList.innerHTML = '';
+
+            if (topic.phrases.length === 0) {
+                const noResultItem = document.createElement('div');
+                noResultItem.className = 'phrase-item';
+                noResultItem.style.textAlign = 'center';
+                noResultItem.style.color = '#888';
+                noResultItem.style.padding = '2rem';
+                noResultItem.textContent = "Tsy ato anat'ity lohahevitra ity ny teny nokarohinao";
+                phrasesList.appendChild(noResultItem);
+            } else {
+                topic.phrases.forEach(phrase => {
+                    const phraseItem = document.createElement('div');
+                    phraseItem.className = 'phrase-item expanded';
+                    
+                    phraseItem.innerHTML = `
+                        <p class="heb">${phrase.hebreo}</p>
+                        <p class="phonetic-text">${phrase.phonetic}</p>
+                        <p class="malagasy-text">${phrase.malagasy}</p>
+                        <p class="topic">Lohahevitra: ${phrase.topic}</p>
+                    `;
+                    
+                    phraseItem.addEventListener('click', function() {
+                        if (lastExpandedItem && lastExpandedItem !== this) {
+                            lastExpandedItem.classList.remove('expanded');
+                        }
+                        this.classList.toggle('expanded');
+                        if (this.classList.contains('expanded')) {
+                            lastExpandedItem = this;
+                        } else {
+                            lastExpandedItem = null;
+                        }
+                    });
+                    phrasesList.appendChild(phraseItem);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
