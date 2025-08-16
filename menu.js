@@ -1,3 +1,25 @@
+function addSwipeListeners() {
+    const sideMenu = document.getElementById('side-menu');
+    let startX;
+    
+    document.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+    });
+
+    document.addEventListener('touchend', (e) => {
+        const endX = e.changedTouches[0].clientX;
+        const deltaX = endX - startX;
+
+        if (Math.abs(deltaX) > 50) {
+            if (deltaX < 0) {
+                sideMenu.classList.add('open');
+            } else {
+                sideMenu.classList.remove('open');
+            }
+        }
+    });
+}
+
 function createAndDisplayMenu(menuData) {
     const sideMenu = document.getElementById('side-menu');
     const menuList = sideMenu.querySelector('ul');
@@ -10,7 +32,6 @@ function createAndDisplayMenu(menuData) {
         
         a.textContent = item.text;
         
-        // Fomba hivoahana ny fampiharana
         if (item.text.toLowerCase().includes('hivoaka')) {
             a.href = '#';
             a.onclick = function() {
@@ -20,10 +41,8 @@ function createAndDisplayMenu(menuData) {
                 return false;
             };
         } else {
-            // Io andalana io no ovaina
             a.href = '#';
             a.onclick = function() {
-                // Miankina amin'ny soratra ao anaty menu.csv ny anaran'ny pejy
                 if (item.text.toLowerCase().includes('mombamomba')) {
                     showInfoPage('about');
                 } else if (item.text.toLowerCase().includes('fifandraisana')) {
@@ -33,6 +52,7 @@ function createAndDisplayMenu(menuData) {
                 } else if (item.text.toLowerCase().includes('kaseho')) {
                     showInfoPage('version');
                 }
+                sideMenu.classList.remove('open');
                 return false;
             };
         }
@@ -41,5 +61,11 @@ function createAndDisplayMenu(menuData) {
         menuList.appendChild(li);
     });
     
-    // ... (Ny sisa amin'ny code dia tsy miova) ...
+    const menuHeader = sideMenu.querySelector('.menu-header');
+    menuHeader.innerHTML = `
+        <img src="icon.png" alt="Icon" class="menu-icon">
+        <h2>Halashon Ivryt Ofisialy</h2>
+    `;
+    
+    addSwipeListeners();
 }
