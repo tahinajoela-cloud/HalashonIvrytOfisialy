@@ -1,0 +1,16 @@
+{
+  "files": [
+    "home.html",
+    "phrases.html",
+    "words.html",
+    "support.html",
+    "about.html",
+    "phrases.js",
+    "words.js",
+    "support.js",
+    "about.js",
+    "wordsdata.csv",
+    "phrasesdata.csv",
+    "style.css"
+  ]
+}
