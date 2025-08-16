@@ -27,6 +27,10 @@ function createAndDisplayMenu(menuData) {
     menuList.innerHTML = '';
 
     menuData.forEach(item => {
+        if (!item || !item.text) { // Fanatsarana hiatrehana ny sanda "null" na "undefined"
+            return;
+        }
+
         const li = document.createElement('li');
         const a = document.createElement('a');
         
