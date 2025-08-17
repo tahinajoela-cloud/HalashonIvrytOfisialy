@@ -2,10 +2,19 @@
   "cache_version": "v1.1",
   "files_to_cache": [
     "./",
-    "style.css",
+    "SILEOT.ttf",
+    "data.csv",
+    "icon.png",
+    "info.csv",
+    "menu.css",
+    "menu.csv",
+    "menu.html",
+    "menu.js",
+    "papaparse.min.js",
     "script.js",
-    "images/logo.png",
-    "data/config.json"
-    // Ampiana ireo rakitra hafa rehetra
+    "style.js",
+    "style.css",
+    "topic.html",
+    "topic.js"
   ]
 }
