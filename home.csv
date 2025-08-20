@@ -1,0 +1,9 @@
+id,title,csv_file,js_file,css_file
+alef,Fandraisana,alef.csv,alef.js,alef.css
+beyt,Fehezanteny,beyt.csv,beyt.js,beyt.css
+gimel,Voambolana,gimel.csv,gimel.js,gimel.css
+dalet,Mombamomba,dalet.csv,dalet.js,dalet.css
+he,Fifandraisana,he.csv,he.js,he.css
+vav,Fanohanana,vav.csv,vav.js,vav.css
+zayin,Kaseho,zayin.csv,zayin.js,zayin.css
+chet,Hivoaka,chet.csv,chet.js,chet.css
