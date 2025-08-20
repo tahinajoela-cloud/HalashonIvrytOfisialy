@@ -1,0 +1,37 @@
+#main-content {
+    padding: 2rem 1rem;
+    max-width: 800px;
+    margin: 0 auto;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+}
+
+/* Endriky ny valin'ny fikarohana */
+.search-result-item {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.result-hebrew {
+    font-size: 1.5rem;
+    font-weight: bold;
+    direction: rtl;
+    unicode-bidi: embed;
+}
+
+.result-phonetic, .result-malagasy {
+    margin-top: 0.5rem;
+    font-style: italic;
+    color: #666;
+}
+
+.result-topic {
+    font-size: 0.8rem;
+    color: #999;
+    margin-top: 0.5rem;
+}
