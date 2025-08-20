@@ -1,0 +1,64 @@
+/* Fanitsiana ny fisehoan'ny content ho an'ny scrolling */
+#main-content {
+    padding: 2rem 1rem;
+    max-width: 800px;
+    margin: 0 auto;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+}
+
+/* Endriky ny division topic */
+.topic-item {
+    background-color: #fff;
+    color: var(--primary-color);
+    padding: 2rem 0;
+    vertical-align: middle;
+    margin-bottom: 0.5rem;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.topic-item:hover {
+    background-color: var(--accent-color);
+    transform: translateY(-2px);
+}
+
+/* Endriky ny division voambolana (item-details) */
+.word-item {
+    background-color: #fff;
+    padding: 0.25rem;
+    margin-bottom: 0.5rem;
+    border-radius: 5px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Fanamafisana ny soratra hebreo ho RTL */
+.word-hebrew {
+    font-size: 1.75rem;
+    font-family: 'Ezra SIL';
+    direction: rtl;
+    unicode-bidi: embed;
+    margin: 0.5rem 0 0.5rem 0;
+    color:#50b4d8;
+}
+
+.word-phonetic {
+    margin: 0;
+    color: #666;
+    font-size: 1.0rem;
+    display: none;
+}
+.word-malagasy {
+    margin: 0;
+    color: black;
+    font-size: 1.25rem;
+    display: none;
+}
+.word-topic {
+    font-size: 0.75rem;
+    color: #999;
+    margin-top: 0.5rem;
+}
