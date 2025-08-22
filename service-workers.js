@@ -7,7 +7,10 @@ const MANIFEST_URL = 'manifest.json';
 // Ny rakitra fototra ho tahirizina foana
 const urlsToCache = [
     '/',
-    'index.html'
+    'index.html',
+    'home.html', 
+    'home.css', 
+    'home.js'
 ];
 
 // Fandinihana ny fisintonana
@@ -65,7 +68,7 @@ self.addEventListener('fetch', (event) => {
                 return cachedResponse;
             }
             return fetch(event.request).then((fetchedResponse) => {
-                if (event.request.method === 'GET') { // Tsy mitahiry afa-tsy GET requests
+                if (event.request.method === 'GET') {
                     const clonedResponse = fetchedResponse.clone();
                     caches.open(CACHE_NAME).then((cache) => {
                         cache.put(event.request, clonedResponse);
@@ -81,51 +84,55 @@ self.addEventListener('fetch', (event) => {
 });
 
 // Fampandehanana ny caching lehibe
-function startCaching(client) {
+async function startCaching(client) {
     console.log('Manomboka ny caching...');
     let filesCached = 0;
     let totalFiles = 0;
 
-    fetch(MANIFEST_URL)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Tsy nahomby ny fisintonana ny manifest.json');
-            }
-            return response.json();
-        })
-        .then(manifestData => {
-            const filesToCache = manifestData.files;
-            totalFiles = filesToCache.length;
-            
-            return caches.open(CACHE_NAME);
-        })
-        .then(cache => {
-            const promises = filesToCache.map(relativeUrl => {
+    try {
+        const manifestResponse = await fetch(MANIFEST_URL);
+        if (!manifestResponse.ok) {
+            throw new Error('Tsy nahomby ny fisintonana ny manifest.json');
+        }
+
+        const manifestData = await manifestResponse.json();
+        const filesToCache = manifestData.files;
+        totalFiles = filesToCache.length;
+
+        const cache = await caches.open(CACHE_NAME);
+
+        const cachePromises = filesToCache.map(async (relativeUrl) => {
+            try {
                 const fullUrl = new URL(relativeUrl, self.location.href).href;
-                return fetch(fullUrl)
-                    .then(response => {
-                        if (response.ok) {
-                            return cache.put(fullUrl, response.clone()).then(() => {
-                                filesCached++;
-                                client.postMessage({ type: 'progress', filesCached, totalFiles });
-                                console.log('Voatahiry:', fullUrl);
-                            });
-                        } else {
-                            console.error('Tsy nahomby ny fisintonana:', fullUrl, response.status);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Tsy nahomby ny fanampiana cache:', fullUrl, error);
-                    });
-            });
-            return Promise.all(promises);
-        })
-        .then(() => {
-            client.postMessage({ type: 'complete' });
-            console.log('Vita tanteraka ny fisintomana sy fitahirizana.');
-        })
-        .catch(error => {
-            console.error('Tsy nahomby ny fanombohana caching:', error);
-            client.postMessage({ type: 'error', message: error.message });
+                
+                const cachedResponse = await cache.match(fullUrl);
+                if (cachedResponse) {
+                    filesCached++;
+                    client.postMessage({ type: 'progress', filesCached, totalFiles });
+                    return; // Efa ao anaty cache, tsy misy ilana azy intsony
+                }
+                
+                const fetchedResponse = await fetch(fullUrl);
+                if (fetchedResponse.ok) {
+                    await cache.put(fullUrl, fetchedResponse.clone());
+                    filesCached++;
+                    console.log('Voatahiry:', fullUrl);
+                    client.postMessage({ type: 'progress', filesCached, totalFiles });
+                } else {
+                    console.error('Tsy nahomby ny fisintonana:', fullUrl, fetchedResponse.status);
+                }
+            } catch (error) {
+                console.error('Tsy nahomby ny fanampiana cache:', relativeUrl, error);
+            }
         });
-}           
+
+        await Promise.all(cachePromises);
+
+        client.postMessage({ type: 'complete' });
+        console.log('Vita tanteraka ny fisintomana sy fitahirizana.');
+
+    } catch (error) {
+        console.error('Tsy nahomby ny fanombohana caching:', error);
+        client.postMessage({ type: 'error', message: error.message });
+    }
+}
