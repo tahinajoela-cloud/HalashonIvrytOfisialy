@@ -12,7 +12,6 @@ const urlsToCache = [
 
 // Fandinihana ny fisintonana
 self.addEventListener('install', (event) => {
-    // Manokatra ny cache ary mitahiry ireo rakitra fototra
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
             console.log('Cache fototra nosokafana');
@@ -23,7 +22,6 @@ self.addEventListener('install', (event) => {
 
 // Fandinihana ny fanetsiketsehana (activation)
 self.addEventListener('activate', (event) => {
-    // Manafoana ny cache efa taloha
     event.waitUntil(
         caches.keys().then((cacheNames) => {
             return Promise.all(
@@ -36,7 +34,6 @@ self.addEventListener('activate', (event) => {
             );
         })
     );
-    // Avy hatrany, mankany amin'ny pejy fandraisana (home.html)
     event.waitUntil(self.clients.claim());
 });
 
@@ -54,16 +51,13 @@ self.addEventListener('fetch', (event) => {
             if (cachedResponse) {
                 return cachedResponse;
             }
-            // Raha tsy ao anaty cache, alao amin'ny tambajotra
             return fetch(event.request).then((fetchedResponse) => {
-                // Afaka manampy ny rakitra vaovao ao anaty cache eto raha ilaina
                 const clonedResponse = fetchedResponse.clone();
                 caches.open(CACHE_NAME).then((cache) => {
                     cache.put(event.request, clonedResponse);
                 });
                 return fetchedResponse;
             }).catch(() => {
-                // Raha tsy misy tambajotra, mety manome pejy tsy misy tambajotra (offline page)
                 console.error('Tsy misy tambajotra ary tsy ao anaty cache ilay rakitra.');
                 return new Response('Tsy misy tambajotra');
             });
@@ -76,21 +70,19 @@ self.addEventListener('fetch', (event) => {
 async function startCaching(client) {
     console.log('Manomboka ny caching...');
     try {
-        // Sintomy ny manifest.json ary raiso ny angona
         const manifestResponse = await fetch(MANIFEST_URL);
         const manifestData = await manifestResponse.json();
-        const filesToCache = manifestData.files; // Raiso ny array avy amin'ny "files"
+        const filesToCache = manifestData.files;
 
         const totalFiles = filesToCache.length;
         let filesCached = 0;
 
         const cache = await caches.open(CACHE_NAME);
 
-        // Mampiasa loop for...of ho solon'ny Promise.all mba tsy hijanona raha misy fahadisoana
+        // Mampiasa loop for...of mba tsy hijanona raha misy fahadisoana
         for (const relativeUrl of filesToCache) {
             const fileUrl = new URL(relativeUrl, location.href).href;
             try {
-                // Jereo raha efa ao anaty cache ilay rakitra
                 const cachedResponse = await cache.match(fileUrl);
                 if (cachedResponse) {
                     filesCached++;
@@ -99,10 +91,9 @@ async function startCaching(client) {
                         filesCached,
                         totalFiles
                     });
-                    continue; // Mandehana manaraka
+                    continue;
                 }
                 
-                // Raha tsy ao, sintomy sy tahirizo izy
                 const fetchedResponse = await fetch(fileUrl);
                 if (fetchedResponse.ok) {
                     await cache.put(fileUrl, fetchedResponse);
@@ -121,7 +112,6 @@ async function startCaching(client) {
             }
         }
         
-        // Rehefa vita daholo, mandefa hafatra farany
         client.postMessage({
             type: 'complete'
         });
