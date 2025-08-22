@@ -1,5 +1,7 @@
 {
   "files": [
+    "index.html",
+    "service-workers.js",
     "fanohanana.html",
     "fanohanana.css",
     "fanohanana.js",
