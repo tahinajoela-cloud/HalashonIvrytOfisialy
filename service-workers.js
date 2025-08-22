@@ -65,10 +65,12 @@ self.addEventListener('fetch', (event) => {
                 return cachedResponse;
             }
             return fetch(event.request).then((fetchedResponse) => {
-                const clonedResponse = fetchedResponse.clone();
-                caches.open(CACHE_NAME).then((cache) => {
-                    cache.put(event.request, clonedResponse);
-                });
+                if (event.request.method === 'GET') { // Tsy mitahiry afa-tsy GET requests
+                    const clonedResponse = fetchedResponse.clone();
+                    caches.open(CACHE_NAME).then((cache) => {
+                        cache.put(event.request, clonedResponse);
+                    });
+                }
                 return fetchedResponse;
             }).catch(() => {
                 console.error('Tsy misy tambajotra ary tsy ao anaty cache ilay rakitra.');
@@ -77,7 +79,6 @@ self.addEventListener('fetch', (event) => {
         })
     );
 });
-
 
 // Fampandehanana ny caching lehibe
 function startCaching(client) {
@@ -99,38 +100,25 @@ function startCaching(client) {
             return caches.open(CACHE_NAME);
         })
         .then(cache => {
-            // Mampiasa promise chain ho an'ny rakitra tsirairay
-            return new Promise((resolve, reject) => {
-                let currentPromise = Promise.resolve();
-                filesToCache.forEach(relativeUrl => {
-                    currentPromise = currentPromise.then(() => {
-                        return cache.match(relativeUrl);
-                    }).then((cachedResponse) => {
-                        if (cachedResponse) {
-                            filesCached++;
-                            client.postMessage({ type: 'progress', filesCached, totalFiles });
-                            return;
+            const promises = filesToCache.map(relativeUrl => {
+                const fullUrl = new URL(relativeUrl, self.location.href).href;
+                return fetch(fullUrl)
+                    .then(response => {
+                        if (response.ok) {
+                            return cache.put(fullUrl, response.clone()).then(() => {
+                                filesCached++;
+                                client.postMessage({ type: 'progress', filesCached, totalFiles });
+                                console.log('Voatahiry:', fullUrl);
+                            });
+                        } else {
+                            console.error('Tsy nahomby ny fisintonana:', fullUrl, response.status);
                         }
-                        return fetch(relativeUrl).then(fetchedResponse => {
-                            if (fetchedResponse.ok) {
-                                return cache.put(relativeUrl, fetchedResponse).then(() => {
-                                    filesCached++;
-                                    console.log('Voatahiry:', relativeUrl);
-                                    client.postMessage({ type: 'progress', filesCached, totalFiles });
-                                });
-                            } else {
-                                console.error('Tsy nahomby ny fisintonana:', relativeUrl, fetchedResponse.status);
-                                // Tsy mijanona ny caching raha misy fahadisoana iray
-                                return Promise.resolve();
-                            }
-                        }).catch(error => {
-                            console.error('Tsy nahomby ny fanampiana cache:', relativeUrl, error);
-                            return Promise.resolve();
-                        });
+                    })
+                    .catch(error => {
+                        console.error('Tsy nahomby ny fanampiana cache:', fullUrl, error);
                     });
-                });
-                resolve(currentPromise);
             });
+            return Promise.all(promises);
         })
         .then(() => {
             client.postMessage({ type: 'complete' });
@@ -138,5 +126,6 @@ function startCaching(client) {
         })
         .catch(error => {
             console.error('Tsy nahomby ny fanombohana caching:', error);
+            client.postMessage({ type: 'error', message: error.message });
         });
-}
+}           
