@@ -54,7 +54,6 @@ self.addEventListener('fetch', (event) => {
             if (cachedResponse) {
                 return cachedResponse;
             }
-            // Raha tsy ao anaty cache, alao amin'ny tambajotra
             return fetch(event.request).then((fetchedResponse) => {
                 const clonedResponse = fetchedResponse.clone();
                 caches.open(CACHE_NAME).then((cache) => {
@@ -83,11 +82,12 @@ async function startCaching(client) {
 
         const cache = await caches.open(CACHE_NAME);
 
-        // Mampiasa loop for...of mba tsy hijanona raha misy fahadisoana
         for (const relativeUrl of filesToCache) {
-            // Mampiasa ny lalana mifandraika mivantana fa tsy mampiasa 'location.href'
             try {
-                const cachedResponse = await cache.match(relativeUrl);
+                // Mampiasa fetch miaraka amin'ny URL vaovao
+                const fetchRequest = new Request(relativeUrl);
+                const cachedResponse = await cache.match(fetchRequest);
+
                 if (cachedResponse) {
                     filesCached++;
                     client.postMessage({
@@ -97,10 +97,10 @@ async function startCaching(client) {
                     });
                     continue;
                 }
-                
-                const fetchedResponse = await fetch(relativeUrl);
+
+                const fetchedResponse = await fetch(fetchRequest);
                 if (fetchedResponse.ok) {
-                    await cache.put(relativeUrl, fetchedResponse);
+                    await cache.put(fetchRequest, fetchedResponse);
                     filesCached++;
                     console.log('Voatahiry:', relativeUrl);
                     client.postMessage({
