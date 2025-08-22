@@ -5,7 +5,94 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Halashon Ivryt - Fisintonana</title>
     <style>
-        /* (CSS code omitted for brevity - it's the same) */
+        /* CSS ho an'ny pejy fandraisana */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            text-align: center;
+        }
+        .container {
+            padding: 2rem;
+            max-width: 500px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        h1 {
+            color: #2C3E50;
+        }
+        p {
+            color: #666;
+            line-height: 1.5;
+        }
+        .buttons {
+            margin-top: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #downloadBtn {
+            background-color: #3498DB;
+            color: #fff;
+        }
+        #downloadBtn:hover {
+            background-color: #2980B9;
+        }
+        #useBtn {
+            background-color: transparent;
+            color: #3498DB;
+            border: 2px solid #3498DB;
+        }
+        #useBtn:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        #progressBar {
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        #progressFill {
+            width: 0%;
+            height: 20px;
+            background-color: #2ecc71;
+            border-radius: 5px;
+        }
+        #progressText {
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -51,11 +138,10 @@
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('/service-workers.js', { scope: '/' })
                     .then(registration => {
-                        console.log('Service Worker voasoratra tsara:', registration);
+                        console.log('Service Worker voasoratra tsara:', registration.scope);
                     })
                     .catch(error => {
-                        console.log('Service Worker tsy voasoratra:', error);
-                        console.log(error); // Hanehoana ny antsipirian'ny fahadisoana
+                        console.error('Service Worker tsy voasoratra:', error);
                     });
 
                 // Fanekena hafatra avy amin'ny Service Worker
@@ -66,7 +152,6 @@
                         progressBar.style.width = progress + '%';
                         progressText.textContent = `Voasintona: ${message.filesCached} amin'ny ${message.totalFiles} rakitra`;
                     } else if (message.type === 'complete') {
-                        // Rehefa vita ny fisintonana, asehoy ny modal
                         progressContainer.style.display = 'none';
                         modalSuccess.style.display = 'flex';
                     }
@@ -75,14 +160,15 @@
 
             // Fampandehanana ny fiasa fisintonana
             downloadBtn.addEventListener('click', () => {
-                progressContainer.style.display = 'block';
+                progressContainer.style.display = 'flex';
                 progressText.textContent = 'Manomana fisintonana...';
                 
-                // Mandefa hafatra any amin'ny Service Worker mba hanomboka ny caching
                 if (navigator.serviceWorker.controller) {
                     navigator.serviceWorker.controller.postMessage({
                         type: 'start-caching'
                     });
+                } else {
+                    console.error('Tsy misy Service Worker mifehy ankehitriny.');
                 }
             });
 
@@ -99,4 +185,4 @@
         });
     </script>
 </body>
-</html>     
+</html>        
