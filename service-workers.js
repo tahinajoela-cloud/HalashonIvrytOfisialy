@@ -2,7 +2,7 @@
 const CACHE_NAME = 'halashon-ivryt-cache-v1';
 
 // Lohahevitra ho an'ny fisintonana (manifest)
-const MANIFEST_URL = 'https://raw.githubusercontent.com/tahinajoela-cloud/HalashonIvrytOfisialy/NewApp/manifest.json';
+const MANIFEST_URL = 'manifest.json';
 
 // Ny rakitra fototra ho tahirizina foana
 const urlsToCache = [
