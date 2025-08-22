@@ -12,6 +12,7 @@ const urlsToCache = [
 
 // Fandinihana ny fisintonana
 self.addEventListener('install', (event) => {
+    // Manokatra ny cache ary mitahiry ireo rakitra fototra
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
             console.log('Cache fototra nosokafana');
@@ -22,6 +23,7 @@ self.addEventListener('install', (event) => {
 
 // Fandinihana ny fanetsiketsehana (activation)
 self.addEventListener('activate', (event) => {
+    // Manafoana ny cache efa taloha
     event.waitUntil(
         caches.keys().then((cacheNames) => {
             return Promise.all(
@@ -34,6 +36,7 @@ self.addEventListener('activate', (event) => {
             );
         })
     );
+    // Avy hatrany, mankany amin'ny pejy fandraisana (home.html)
     event.waitUntil(self.clients.claim());
 });
 
@@ -51,6 +54,7 @@ self.addEventListener('fetch', (event) => {
             if (cachedResponse) {
                 return cachedResponse;
             }
+            // Raha tsy ao anaty cache, alao amin'ny tambajotra
             return fetch(event.request).then((fetchedResponse) => {
                 const clonedResponse = fetchedResponse.clone();
                 caches.open(CACHE_NAME).then((cache) => {
@@ -81,9 +85,9 @@ async function startCaching(client) {
 
         // Mampiasa loop for...of mba tsy hijanona raha misy fahadisoana
         for (const relativeUrl of filesToCache) {
-            const fileUrl = new URL(relativeUrl, location.href).href;
+            // Mampiasa ny lalana mifandraika mivantana fa tsy mampiasa 'location.href'
             try {
-                const cachedResponse = await cache.match(fileUrl);
+                const cachedResponse = await cache.match(relativeUrl);
                 if (cachedResponse) {
                     filesCached++;
                     client.postMessage({
@@ -94,21 +98,21 @@ async function startCaching(client) {
                     continue;
                 }
                 
-                const fetchedResponse = await fetch(fileUrl);
+                const fetchedResponse = await fetch(relativeUrl);
                 if (fetchedResponse.ok) {
-                    await cache.put(fileUrl, fetchedResponse);
+                    await cache.put(relativeUrl, fetchedResponse);
                     filesCached++;
-                    console.log('Voatahiry:', fileUrl);
+                    console.log('Voatahiry:', relativeUrl);
                     client.postMessage({
                         type: 'progress',
                         filesCached,
                         totalFiles
                     });
                 } else {
-                    console.error('Tsy nahomby ny fisintonana:', fileUrl, fetchedResponse.status);
+                    console.error('Tsy nahomby ny fisintonana:', relativeUrl, fetchedResponse.status);
                 }
             } catch (error) {
-                console.error('Tsy nahomby ny fanampiana cache:', fileUrl, error);
+                console.error('Tsy nahomby ny fanampiana cache:', relativeUrl, error);
             }
         }
         
